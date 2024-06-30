@@ -28,7 +28,7 @@ class ApiService {
       return null;
     }
   }
-
+  
   Future<Map<String, dynamic>> register(String name, String email, String password) async {
     try {
       final response = await _dio.post('/register', data: {
