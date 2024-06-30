@@ -17,8 +17,18 @@ class MyApp extends StatelessWidget {
     return ChangeNotifierProvider(
       create: (_) => AuthViewModel()..loadUser(),
       child: MaterialApp(
+        debugShowCheckedModeBanner: false,
         title: 'Story App',
-        theme: ThemeData(primarySwatch: Colors.blue),
+        theme: ThemeData.dark().copyWith(
+          primaryColor: Colors.teal,
+          scaffoldBackgroundColor: Colors.black,
+          appBarTheme: const AppBarTheme(
+            backgroundColor: Colors.teal,
+          ),
+          textTheme: const TextTheme(
+            bodyMedium: TextStyle(color: Colors.white),
+          ),
+        ),
         initialRoute: '/',
         routes: {
           '/': (context) => Consumer<AuthViewModel>(

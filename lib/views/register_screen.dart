@@ -3,6 +3,8 @@ import 'package:provider/provider.dart';
 import 'package:moa_final_project/viewmodels/auth_viewmodel.dart';
 
 class RegisterScreen extends StatefulWidget {
+  const RegisterScreen({super.key});
+
   @override
   _RegisterScreenState createState() => _RegisterScreenState();
 }
@@ -15,17 +17,36 @@ class _RegisterScreenState extends State<RegisterScreen> {
 
   void _register(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      await Provider.of<AuthViewModel>(context, listen: false).register(
+      final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+
+      // Validasi apakah email sudah terdaftar
+      final isEmailTaken = await authViewModel.checkEmailExists(_emailController.text);
+      if (isEmailTaken) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Email is already taken')),
+        );
+        return;
+      }
+
+      // Lakukan registrasi
+      bool registrationSuccess = false;
+      await authViewModel.register(
         _nameController.text,
         _emailController.text,
         _passwordController.text,
+        onSuccess: () {
+          registrationSuccess = true;
+        },
+        onError: (error) {
+          print('Registration failed: $error');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registration failed')),
+          );
+        },
       );
-      if (Provider.of<AuthViewModel>(context, listen: false).user != null) {
+
+      if (registrationSuccess) {
         Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Registration failed')),
-        );
       }
     }
   }

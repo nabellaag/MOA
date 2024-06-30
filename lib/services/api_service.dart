@@ -11,28 +11,39 @@ class ApiService {
         'email': email,
         'password': password,
       });
-      final user = User.fromJson(response.data['loginResult']);
-      await saveToken(user.token);
-      return user;
+
+      print('Login response status: ${response.statusCode}');
+      print('Login response data: ${response.data}');
+
+      if (response.statusCode == 200 && response.data['error'] == false) {
+        final user = User.fromJson(response.data['loginResult']);
+        await saveToken(user.token);
+        return user;
+      } else {
+        print('Login failed: ${response.data['message']}');
+        return null;
+      }
     } catch (e) {
-      print(e);
+      print('Login error: $e'); // Log error
       return null;
     }
   }
 
-  Future<User?> register(String name, String email, String password) async {
+  Future<Map<String, dynamic>> register(String name, String email, String password) async {
     try {
       final response = await _dio.post('/register', data: {
         'name': name,
         'email': email,
         'password': password,
       });
-      final user = User.fromJson(response.data['loginResult']);
-      await saveToken(user.token);
-      return user;
+      print('Register response data: ${response.data}');
+      return {
+        'error': response.data['error'] ?? true, // Pastikan boolean, default true jika null
+        'message': response.data['message'] ?? 'Unknown error', // Default message jika null
+      };
     } catch (e) {
-      print(e);
-      return null;
+      print('Register error: $e');
+      throw e; // Handle error accordingly
     }
   }
 
@@ -49,5 +60,16 @@ class ApiService {
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('token');
+  }
+
+  Future<Map<String, dynamic>> checkEmailExists(String email) async {
+    try {
+      final response = await _dio.get('/check-email', queryParameters: {'email': email});
+      print('Check email response data: ${response.data}');
+      return response.data;
+    } catch (e) {
+      print('Check email error: $e');
+      throw e; // Handle error accordingly
+    }
   }
 }
