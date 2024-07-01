@@ -14,19 +14,27 @@ class _LoginScreenState extends State<LoginScreen> {
 
   void _login(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
-      await Provider.of<AuthViewModel>(context, listen: false).login(
+      final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+
+      authViewModel.login(
         _emailController.text,
         _passwordController.text,
+        onSuccess: (user) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Login successful')),
+          );
+          Navigator.pushReplacementNamed(context, '/home');
+        },
+        onError: (error) {
+          print('Login failed: $error');
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error)),
+          );
+        },
       );
-      if (Provider.of<AuthViewModel>(context, listen: false).user != null) {
-        Navigator.pushReplacementNamed(context, '/home');
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed')),
-        );
-      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

@@ -16,9 +16,15 @@ class ApiService {
       print('Login response data: ${response.data}');
 
       if (response.statusCode == 200 && response.data['error'] == false) {
-        final user = User.fromJson(response.data['loginResult']);
-        await saveToken(user.token);
-        return user;
+        final loginResult = response.data['loginResult'];
+        if (loginResult != null) {
+          final user = User.fromJson(loginResult);
+          await saveToken(user.token);
+          return user;
+        } else {
+          print('Login failed: loginResult is null');
+          return null;
+        }
       } else {
         print('Login failed: ${response.data['message']}');
         return null;
@@ -28,7 +34,6 @@ class ApiService {
       return null;
     }
   }
-  
   Future<Map<String, dynamic>> register(String name, String email, String password) async {
     try {
       final response = await _dio.post('/register', data: {
@@ -36,14 +41,29 @@ class ApiService {
         'email': email,
         'password': password,
       });
+
+      print('Register response status: ${response.statusCode}');
       print('Register response data: ${response.data}');
-      return {
-        'error': response.data['error'] ?? true, // Pastikan boolean, default true jika null
-        'message': response.data['message'] ?? 'Unknown error', // Default message jika null
-      };
+
+      if (response.statusCode == 201) {
+        // Registrasi berhasil
+        return {
+          'error': false,
+          'message': 'Registration successful',
+        };
+      } else {
+        // Registrasi gagal, tetapi server merespons
+        return {
+          'error': response.data['error'] ?? true, // Pastikan boolean, default true jika null
+          'message': response.data['message'] ?? 'Unknown error', // Default message jika null
+        };
+      }
     } catch (e) {
       print('Register error: $e');
-      throw e; // Handle error accordingly
+      return {
+        'error': true,
+        'message': 'Registration failed: $e',
+      };
     }
   }
 

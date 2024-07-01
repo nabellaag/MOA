@@ -19,37 +19,27 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
-      // Validasi apakah email sudah terdaftar
-      final isEmailTaken = await authViewModel.checkEmailExists(_emailController.text);
-      if (isEmailTaken) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Email is already taken')),
-        );
-        return;
-      }
-
       // Lakukan registrasi
-      bool registrationSuccess = false;
-      await authViewModel.register(
+      authViewModel.register(
         _nameController.text,
         _emailController.text,
         _passwordController.text,
         onSuccess: () {
-          registrationSuccess = true;
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Registration successful')),
+          );
+          Navigator.pushReplacementNamed(context, '/home');
         },
         onError: (error) {
           print('Registration failed: $error');
           ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Registration failed')),
+            SnackBar(content: Text(error)),
           );
         },
       );
-
-      if (registrationSuccess) {
-        Navigator.pushReplacementNamed(context, '/home');
-      }
     }
   }
+
 
   @override
   Widget build(BuildContext context) {

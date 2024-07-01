@@ -10,15 +10,21 @@ class AuthViewModel extends ChangeNotifier {
 
   User? get user => _user;
 
-  Future<void> login(String email, String password) async {
-    _user = await _apiService.login(email, password);
-    if (_user != null) {
-      await _databaseService.insertUser(_user!);
-      print('User logged in: ${_user!.toJson()}');
-    } else {
-      print('Login failed');
+  Future<void> login(String email, String password, {
+    required Function(User user) onSuccess,
+    required Function(String error) onError,
+  }) async {
+    try {
+      final user = await _apiService.login(email, password);
+      if (user != null) {
+        onSuccess(user);
+      } else {
+        onError('Login failed');
+      }
+    } catch (e) {
+      print('Login error: $e');
+      onError('Login failed: $e');
     }
-    notifyListeners();
   }
 
   Future<void> register(String name, String email, String password, {
