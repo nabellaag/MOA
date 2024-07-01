@@ -19,7 +19,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
     if (_formKey.currentState?.validate() ?? false) {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
 
-      // Lakukan registrasi
       authViewModel.register(
         _nameController.text,
         _emailController.text,
@@ -40,46 +39,105 @@ class _RegisterScreenState extends State<RegisterScreen> {
     }
   }
 
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: Text('Register')),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Form(
-          key: _formKey,
-          child: Column(
-            children: [
-              TextFormField(
-                controller: _nameController,
-                decoration: InputDecoration(labelText: 'Name'),
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Please enter your name' : null,
-              ),
-              TextFormField(
-                controller: _emailController,
-                decoration: InputDecoration(labelText: 'Email'),
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Please enter your email' : null,
-              ),
-              TextFormField(
-                controller: _passwordController,
-                decoration: InputDecoration(labelText: 'Password'),
-                obscureText: true,
-                validator: (value) =>
-                value?.isEmpty ?? true ? 'Please enter your password' : null,
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: () => _register(context),
-                child: Text('Register'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pushNamed(context, '/login'),
-                child: Text('Already have an account? Login'),
-              ),
-            ],
+      appBar: AppBar(
+        title: Text('Register', style: TextStyle(fontFamily: 'Billabong', fontSize: 30)),
+      ),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Form(
+            key: _formKey,
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                SizedBox(height: 50),
+                Center(
+                  child: Text(
+                    'Ziagram',
+                    style: TextStyle(
+                      fontFamily: 'Billabong',
+                      fontSize: 50,
+                    ),
+                  ),
+                ),
+                SizedBox(height: 50),
+                TextFormField(
+                  controller: _nameController,
+                  decoration: InputDecoration(
+                    labelText: 'Name',
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  validator: (value) =>
+                  value?.isEmpty ?? true ? 'Please enter your name' : null,
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Email',
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  validator: (value) =>
+                  value?.isEmpty ?? true ? 'Please enter your email' : null,
+                ),
+                SizedBox(height: 20),
+                TextFormField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Password',
+                    filled: true,
+                    fillColor: Colors.grey[200],
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  obscureText: true,
+                  validator: (value) =>
+                  value?.isEmpty ?? true ? 'Please enter your password' : null,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () => _register(context),
+                  style: ElevatedButton.styleFrom(
+                    padding: EdgeInsets.symmetric(vertical: 15),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    'Register',
+                    style: TextStyle(fontSize: 16),
+                  ),
+                ),
+                SizedBox(height: 20),
+                Center(
+                  child: GestureDetector(
+                    onTap: () => Navigator.pushNamed(context, '/login'),
+                    child: Text(
+                      'Already have an account? Login.',
+                      style: TextStyle(
+                        color: Colors.blue,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

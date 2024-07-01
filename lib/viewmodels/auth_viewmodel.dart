@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:moa_final_project/models/user.dart';
 import 'package:moa_final_project/services/api_service.dart';
 import 'package:moa_final_project/services/database_service.dart';
+import 'package:moa_final_project/models/story.dart'; // Ensure this import is added
+import 'dart:io'; // Ensure this import is added
 
 class AuthViewModel extends ChangeNotifier {
   final ApiService _apiService = ApiService();
@@ -34,7 +36,6 @@ class AuthViewModel extends ChangeNotifier {
     try {
       final result = await _apiService.register(name, email, password);
       print('Register result: $result');
-      // Pastikan respons dari API adalah Map<String, dynamic>
       if (result != null && result['error'] == false) {
         onSuccess?.call();
       } else {
@@ -62,14 +63,42 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 
-  Future<bool> checkEmailExists(String email) async {
+  List<Story> _stories = [];
+  List<Story> get stories => _stories;
+
+  Future<void> fetchStories() async {
     try {
-      final response = await _apiService.checkEmailExists(email);
-      print('Check email exists response: $response');
-      return response['error'] ?? true; // Ubah logika sesuai respons API
+      _stories = await _apiService.getAllStories();
+      notifyListeners();
     } catch (e) {
-      print('Check email exists error: $e');
-      return false; // Atau handle error sesuai kebutuhan
+      print('Fetch stories error: $e');
+    }
+  }
+
+  Future<void> addStory(String description, File photo, {
+    required Function() onSuccess,
+    required Function(String error) onError,
+  }) async {
+    try {
+      await _apiService.addStory(description, photo);
+      await fetchStories(); // Refresh stories after adding a new one
+      onSuccess();
+    } catch (e) {
+      print('Add story error: $e');
+      onError('Failed to add story: $e');
+    }
+  }
+  Future<void> deleteStory(String storyId, {
+    required Function() onSuccess,
+    required Function(String error) onError,
+  }) async {
+    try {
+      await _apiService.deleteStory(storyId);
+      await fetchStories(); // Refresh stories after deletion
+      onSuccess();
+    } catch (e) {
+      print('Delete story error: $e');
+      onError('Failed to delete story: $e');
     }
   }
 }
