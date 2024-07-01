@@ -39,6 +39,7 @@ class AuthViewModel extends ChangeNotifier {
       if (result != null && result['error'] == false) {
         onSuccess?.call();
       } else {
+        print('Registration failed with message: ${result['message']}');
         onError?.call(result['message'] ?? 'Failed to register');
       }
     } catch (e) {

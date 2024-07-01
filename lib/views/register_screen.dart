@@ -14,6 +14,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   final _nameController = TextEditingController();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscureText = true;
 
   void _register(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -42,9 +43,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Register', style: TextStyle(fontFamily: 'Billabong', fontSize: 30)),
-      ),
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(16.0),
@@ -53,13 +51,14 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                SizedBox(height: 50),
+                SizedBox(height: 80),
                 Center(
                   child: Text(
                     'Ziagram',
                     style: TextStyle(
                       fontFamily: 'Billabong',
                       fontSize: 50,
+                      color: Theme.of(context).textTheme.headlineSmall?.color,
                     ),
                   ),
                 ),
@@ -68,11 +67,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _nameController,
                   decoration: InputDecoration(
                     labelText: 'Name',
+                    labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: Colors.transparent,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
                     ),
                   ),
                   validator: (value) =>
@@ -83,11 +87,16 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: Colors.transparent,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
                     ),
                   ),
                   validator: (value) =>
@@ -98,14 +107,30 @@ class _RegisterScreenState extends State<RegisterScreen> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                    labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: Colors.transparent,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
                     ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscureText,
                   validator: (value) =>
                   value?.isEmpty ?? true ? 'Please enter your password' : null,
                 ),

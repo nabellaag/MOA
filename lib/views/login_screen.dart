@@ -13,6 +13,7 @@ class _LoginScreenState extends State<LoginScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _obscureText = true;
 
   void _login(BuildContext context) async {
     if (_formKey.currentState?.validate() ?? false) {
@@ -55,6 +56,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     style: TextStyle(
                       fontFamily: 'Billabong',
                       fontSize: 50,
+                      color: Theme.of(context).textTheme.headlineSmall?.color,
                     ),
                   ),
                 ),
@@ -63,11 +65,16 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _emailController,
                   decoration: InputDecoration(
                     labelText: 'Email',
+                    labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: Colors.transparent,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
                     ),
                   ),
                   validator: (value) =>
@@ -78,14 +85,30 @@ class _LoginScreenState extends State<LoginScreen> {
                   controller: _passwordController,
                   decoration: InputDecoration(
                     labelText: 'Password',
+                    labelStyle: TextStyle(color: Theme.of(context).textTheme.bodyLarge?.color),
                     filled: true,
-                    fillColor: Colors.grey[200],
+                    fillColor: Colors.transparent,
                     border: OutlineInputBorder(
                       borderRadius: BorderRadius.circular(10),
-                      borderSide: BorderSide.none,
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: Theme.of(context).dividerColor),
+                    ),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility : Icons.visibility_off,
+                        color: Theme.of(context).iconTheme.color,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
                     ),
                   ),
-                  obscureText: true,
+                  obscureText: _obscureText,
                   validator: (value) =>
                   value?.isEmpty ?? true ? 'Please enter password' : null,
                 ),
@@ -107,7 +130,7 @@ class _LoginScreenState extends State<LoginScreen> {
                 Center(
                   child: Text(
                     'OR',
-                    style: TextStyle(fontSize: 14),
+                    style: TextStyle(fontSize: 14, color: Theme.of(context).textTheme.bodyLarge?.color),
                   ),
                 ),
                 SizedBox(height: 20),

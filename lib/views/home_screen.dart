@@ -3,12 +3,21 @@ import 'package:provider/provider.dart';
 import 'package:moa_final_project/viewmodels/auth_viewmodel.dart';
 import 'add_story_screen.dart';
 
-class HomeScreen extends StatelessWidget {
+class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
+
+  @override
+  _HomeScreenState createState() => _HomeScreenState();
+}
+
+class _HomeScreenState extends State<HomeScreen> {
+  int _selectedIndex = 0;
 
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
+    final username = authViewModel.user?.name ?? 'User'; // Ambil nama pengguna dari AuthViewModel
+    final email = authViewModel.user?.email ?? 'No email'; // Ambil email pengguna dari AuthViewModel
 
     // Fetch stories when the screen is loaded
     WidgetsBinding.instance?.addPostFrameCallback((_) {
@@ -27,54 +36,95 @@ class HomeScreen extends StatelessWidget {
       );
     }
 
-    void _deleteStory(String storyId) {
-      authViewModel.deleteStory(
-        storyId,
-        onSuccess: () {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Story deleted successfully')),
-          );
-        },
-        onError: (error) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Failed to delete story: $error')),
+    Widget _buildHome() {
+      return authViewModel.stories.isEmpty
+          ? const Center(child: CircularProgressIndicator())
+          : ListView.builder(
+        padding: EdgeInsets.all(10.0),
+        itemCount: authViewModel.stories.length,
+        itemBuilder: (context, index) {
+          final story = authViewModel.stories[index];
+          return Card(
+            margin: EdgeInsets.symmetric(vertical: 10.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                ListTile(
+                  leading: CircleAvatar(
+                    backgroundImage: NetworkImage(story.photoUrl),
+                  ),
+                  title: Text(story.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                ),
+                Image.network(
+                  story.photoUrl,
+                  fit: BoxFit.cover,
+                  width: double.infinity,
+                  height: 200,
+                ),
+                Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: Text(story.description),
+                ),
+              ],
+            ),
           );
         },
       );
     }
 
+    Widget _buildAccount() {
+      return Center(
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            SizedBox(height: 20),
+            Text(
+              username,
+              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            ),
+            SizedBox(height: 10),
+            Text(
+              email,
+              style: TextStyle(fontSize: 18),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _logout,
+              child: Text('Logout'),
+            ),
+          ],
+        ),
+      );
+    }
+
     return Scaffold(
       appBar: AppBar(
-        title: Text('Home', style: TextStyle(fontFamily: 'Billabong', fontSize: 30)),
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: _logout,
-          ),
-        ],
+        title: Text('Welcome $username', style: TextStyle(fontFamily: 'Billabong', fontSize: 30)),
       ),
-      body: authViewModel.stories.isEmpty
-          ? const Center(child: CircularProgressIndicator())
-          : ListView.builder(
-        itemCount: authViewModel.stories.length,
-        itemBuilder: (context, index) {
-          final story = authViewModel.stories[index];
-          return ListTile(
-            leading: CircleAvatar(
-              backgroundImage: NetworkImage(story.photoUrl),
-            ),
-            title: Text(story.name),
-            subtitle: Text(story.description),
-            trailing: IconButton(
-              icon: Icon(Icons.delete),
-              onPressed: () => _deleteStory(story.id),
-            ),
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton(
+      body: _selectedIndex == 0 ? _buildHome() : _buildAccount(),
+      floatingActionButton: _selectedIndex == 0
+          ? FloatingActionButton(
         onPressed: _addStory,
         child: Icon(Icons.add),
+      )
+          : null, // Hanya tampilkan FAB di halaman Home
+      bottomNavigationBar: BottomNavigationBar(
+        items: <BottomNavigationBarItem>[
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home, color: _selectedIndex == 0 ? Colors.green : Colors.grey),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.account_circle, color: _selectedIndex == 1 ? Colors.green : Colors.grey),
+            label: 'Account',
+          ),
+        ],
+        currentIndex: _selectedIndex,
+        onTap: (index) {
+          setState(() {
+            _selectedIndex = index;
+          });
+        },
       ),
     );
   }

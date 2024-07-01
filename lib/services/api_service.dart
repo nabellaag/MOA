@@ -45,6 +45,7 @@ class ApiService {
         'password': password,
       });
 
+      print('Register request data: {name: $name, email: $email, password: $password}');
       print('Register response status: ${response.statusCode}');
       print('Register response data: ${response.data}');
 
@@ -115,6 +116,7 @@ class ApiService {
       throw e;
     }
   }
+
   Future<void> deleteStory(String storyId) async {
     final token = await getToken();
     try {
@@ -131,6 +133,7 @@ class ApiService {
       throw e;
     }
   }
+
   Future<void> addStory(String description, File photo) async {
     final token = await getToken();
     try {

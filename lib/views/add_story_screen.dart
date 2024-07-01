@@ -5,6 +5,8 @@ import 'package:provider/provider.dart';
 import 'package:moa_final_project/viewmodels/auth_viewmodel.dart';
 
 class AddStoryScreen extends StatefulWidget {
+  const AddStoryScreen({super.key});
+
   @override
   _AddStoryScreenState createState() => _AddStoryScreenState();
 }
@@ -36,7 +38,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
         },
       );
     } else {
-      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text('Please add an image and description')));
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please add an image and description')));
     }
   }
 
@@ -45,30 +47,56 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Add Story'),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.send),
+            onPressed: _submit,
+          ),
+        ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            TextField(
-              controller: _descriptionController,
-              decoration: InputDecoration(labelText: 'Description'),
-            ),
-            SizedBox(height: 16),
-            _image == null
-                ? Text('No image selected')
-                : Image.file(_image!),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _pickImage,
-              child: Text('Pick Image'),
-            ),
-            SizedBox(height: 16),
-            ElevatedButton(
-              onPressed: _submit,
-              child: Text('Submit'),
-            ),
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: Column(
+            children: [
+              _image == null
+                  ? GestureDetector(
+                onTap: _pickImage,
+                child: Container(
+                  width: double.infinity,
+                  height: 200,
+                  decoration: BoxDecoration(
+                    color: Colors.grey[300],
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(Icons.add_a_photo, color: Colors.grey[700], size: 50),
+                ),
+              )
+                  : GestureDetector(
+                onTap: _pickImage,
+                child: Image.file(
+                  _image!,
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                ),
+              ),
+              const SizedBox(height: 16),
+              TextField(
+                controller: _descriptionController,
+                decoration: const InputDecoration(
+                  border: OutlineInputBorder(),
+                  labelText: 'Description',
+                ),
+                maxLines: 3,
+              ),
+              const SizedBox(height: 16),
+              ElevatedButton(
+                onPressed: _pickImage,
+                child: const Text('Pick Image'),
+              ),
+            ],
+          ),
         ),
       ),
     );
