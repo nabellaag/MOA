@@ -17,8 +17,6 @@ class User {
     );
   }
 
-  get email => null;
-
   Map<String, dynamic> toJson() {
     return {
       'userId': userId,

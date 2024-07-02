@@ -10,6 +10,10 @@ class AuthViewModel extends ChangeNotifier {
   final DatabaseService _databaseService = DatabaseService();
   User? _user;
 
+  AuthViewModel() {
+    loadUser(); // Tambahkan ini
+  }
+
   User? get user => _user;
 
   Future<void> login(String email, String password, {
@@ -19,6 +23,7 @@ class AuthViewModel extends ChangeNotifier {
     try {
       final user = await _apiService.login(email, password);
       if (user != null) {
+        _user = user; // Set user di sini
         onSuccess(user);
       } else {
         onError('Login failed');
@@ -75,6 +80,7 @@ class AuthViewModel extends ChangeNotifier {
       print('Fetch stories error: $e');
     }
   }
+
   Future<void> addStory(String description, File photo, {
     required Function() onSuccess,
     required Function(String error) onError,
@@ -87,6 +93,7 @@ class AuthViewModel extends ChangeNotifier {
       onError(e.toString());  // Pass the exception message directly
     }
   }
+
   Future<void> deleteStory(String storyId, {
     required Function() onSuccess,
     required Function(String error) onError,
@@ -101,3 +108,4 @@ class AuthViewModel extends ChangeNotifier {
     }
   }
 }
+

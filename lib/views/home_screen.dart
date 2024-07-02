@@ -14,15 +14,19 @@ class _HomeScreenState extends State<HomeScreen> {
   int _selectedIndex = 0;
 
   @override
+  void initState() {
+    super.initState();
+    // Memanggil fetchStories saat layar diinisialisasi
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
+      authViewModel.fetchStories();
+    });
+  }
+
+  @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
     final username = authViewModel.user?.name ?? 'User'; // Ambil nama pengguna dari AuthViewModel
-    final email = authViewModel.user?.email ?? 'No email'; // Ambil email pengguna dari AuthViewModel
-
-    // Fetch stories when the screen is loaded
-    WidgetsBinding.instance?.addPostFrameCallback((_) {
-      authViewModel.fetchStories();
-    });
 
     void _logout() async {
       await authViewModel.logout();
@@ -81,11 +85,6 @@ class _HomeScreenState extends State<HomeScreen> {
             Text(
               username,
               style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-            SizedBox(height: 10),
-            Text(
-              email,
-              style: TextStyle(fontSize: 18),
             ),
             SizedBox(height: 20),
             ElevatedButton(
