@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:moa_final_project/viewmodels/auth_viewmodel.dart';
 import 'add_story_screen.dart';
+import 'story_detail_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -37,7 +38,6 @@ class _HomeScreenState extends State<HomeScreen> {
         context,
         MaterialPageRoute(builder: (context) => AddStoryScreen()),
       ).then((_) {
-        // Fetch stories again after adding a new story
         authViewModel.fetchStories();
       });
     }
@@ -80,19 +80,100 @@ class _HomeScreenState extends State<HomeScreen> {
     }
 
     Widget _buildAccount() {
-      return Center(
+      final userStories = authViewModel.stories
+          .where((story) => story.userId == authViewModel.user?.userId)
+          .toList();
+
+      return SingleChildScrollView(
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            SizedBox(height: 20),
-            Text(
-              username,
-              style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
+            Container(
+              padding: EdgeInsets.all(16.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundImage:
+                    NetworkImage('https://via.placeholder.com/150'),
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        userStories.length.toString(),
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text('Posts'),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        '0',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text('Followers'),
+                    ],
+                  ),
+                  Column(
+                    children: [
+                      Text(
+                        '0',
+                        style: TextStyle(
+                            fontSize: 20, fontWeight: FontWeight.bold),
+                      ),
+                      Text('Following'),
+                    ],
+                  ),
+                ],
+              ),
             ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _logout,
-              child: Text('Logout'),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  username,
+                  style: TextStyle(fontWeight: FontWeight.bold, fontSize: 18),
+                ),
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0),
+              child: Align(
+                alignment: Alignment.centerLeft,
+                child: Text('Bio'),
+              ),
+            ),
+            Divider(),
+            GridView.builder(
+              shrinkWrap: true,
+              physics: NeverScrollableScrollPhysics(),
+              itemCount: userStories.length,
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 2,
+                mainAxisSpacing: 2,
+              ),
+              itemBuilder: (context, index) {
+                final story = userStories[index];
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => StoryDetailScreen(story: story),
+                      ),
+                    );
+                  },
+                  child: Image.network(
+                    story.photoUrl,
+                    fit: BoxFit.cover,
+                  ),
+                );
+              },
             ),
           ],
         ),
@@ -101,8 +182,16 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome $username',
-            style: TextStyle(fontFamily: 'Billabong', fontSize: 24)),
+        title: Text(
+          'Welcome $username',
+          style: TextStyle(fontFamily: 'Billabong', fontSize: 24),
+        ),
+        actions: [
+          IconButton(
+            icon: Icon(Icons.logout),
+            onPressed: _logout,
+          ),
+        ],
       ),
       body: _selectedIndex == 0 ? _buildHome() : _buildAccount(),
       floatingActionButton: _selectedIndex == 0

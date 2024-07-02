@@ -80,7 +80,9 @@ class AuthViewModel extends ChangeNotifier {
       print('Fetch stories error: $e');
     }
   }
-
+  List<Story> get userStories {
+    return stories.where((story) => story.userId == user?.userId).toList();
+  }
   Future<void> addStory(String description, File photo, {
     required Function() onSuccess,
     required Function(String error) onError,
