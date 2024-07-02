@@ -75,18 +75,16 @@ class AuthViewModel extends ChangeNotifier {
       print('Fetch stories error: $e');
     }
   }
-
   Future<void> addStory(String description, File photo, {
     required Function() onSuccess,
     required Function(String error) onError,
   }) async {
     try {
       await _apiService.addStory(description, photo);
-      await fetchStories(); // Refresh stories after adding a new one
       onSuccess();
     } catch (e) {
       print('Add story error: $e');
-      onError('Failed to add story: $e');
+      onError(e.toString());  // Pass the exception message directly
     }
   }
   Future<void> deleteStory(String storyId, {

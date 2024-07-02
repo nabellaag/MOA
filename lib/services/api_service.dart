@@ -137,21 +137,28 @@ class ApiService {
   Future<void> addStory(String description, File photo) async {
     final token = await getToken();
     try {
+      String fileName = photo.path.split('/').last;
       FormData formData = FormData.fromMap({
-        'description': description,
-        'photo': await MultipartFile.fromFile(photo.path, filename: 'upload.jpg'),
+        "description": description,
+        "photo": await MultipartFile.fromFile(photo.path, filename: fileName),
       });
-      final response = await _dio.post(
+      Response response = await _dio.post(
         '/stories',
         data: formData,
-        options: Options(headers: {'Authorization': 'Bearer $token'}),
+        options: Options(headers: {
+          'Content-Type': 'multipart/form-data',
+          'Authorization': 'Bearer $token',
+        }),
       );
-      print('Add story response data: ${response.data}');
-      if (response.statusCode != 201) {
-        throw Exception('Failed to add story');
+
+      if (response.statusCode == 200 && response.data['error'] == false) {
+        print('Story added successfully');
+        return;  // Add return here to ensure we don't throw an exception
+      } else {
+        throw Exception(response.data['message'] ?? 'Failed to add story');
       }
     } catch (e) {
-      print('Add story error: $e');
+      print('Error in addStory: $e');
       throw e;
     }
   }

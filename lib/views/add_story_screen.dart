@@ -26,19 +26,42 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
 
   void _submit() async {
     final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
-    if (_image != null && _descriptionController.text.isNotEmpty) {
+    final description = _descriptionController.text;
+
+    if (_image == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please select an image')),
+      );
+      return;
+    }
+
+    if (description.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Please add a description')),
+      );
+      return;
+    }
+
+    try {
       await authViewModel.addStory(
-        _descriptionController.text,
+        description,
         _image!,
         onSuccess: () {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Story added successfully')),
+          );
           Navigator.pop(context);
         },
         onError: (error) {
-          ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error)));
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(error)),
+          );
         },
       );
-    } else {
-      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Please add an image and description')));
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Failed to add story: $e')),
+      );
     }
   }
 
@@ -46,10 +69,10 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('Add Story'),
+        title: const Text('Add Story'),
         actions: [
           IconButton(
-            icon: Icon(Icons.send),
+            icon: const Icon(Icons.send),
             onPressed: _submit,
           ),
         ],
