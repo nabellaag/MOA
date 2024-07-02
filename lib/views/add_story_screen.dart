@@ -50,7 +50,7 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
           ScaffoldMessenger.of(context).showSnackBar(
             const SnackBar(content: Text('Story added successfully')),
           );
-          Navigator.pop(context);
+          Navigator.pop(context); // Kembali ke layar sebelumnya (HomeScreen)
         },
         onError: (error) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -92,7 +92,8 @@ class _AddStoryScreenState extends State<AddStoryScreen> {
                     color: Colors.grey[300],
                     borderRadius: BorderRadius.circular(10),
                   ),
-                  child: Icon(Icons.add_a_photo, color: Colors.grey[700], size: 50),
+                  child: Icon(Icons.add_a_photo,
+                      color: Colors.grey[700], size: 50),
                 ),
               )
                   : GestureDetector(

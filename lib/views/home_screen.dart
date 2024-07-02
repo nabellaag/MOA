@@ -16,7 +16,6 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   void initState() {
     super.initState();
-    // Memanggil fetchStories saat layar diinisialisasi
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final authViewModel = Provider.of<AuthViewModel>(context, listen: false);
       authViewModel.fetchStories();
@@ -26,7 +25,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final authViewModel = Provider.of<AuthViewModel>(context);
-    final username = authViewModel.user?.name ?? 'User'; // Ambil nama pengguna dari AuthViewModel
+    final username = authViewModel.user?.name ?? 'User';
 
     void _logout() async {
       await authViewModel.logout();
@@ -37,7 +36,10 @@ class _HomeScreenState extends State<HomeScreen> {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => AddStoryScreen()),
-      );
+      ).then((_) {
+        // Fetch stories again after adding a new story
+        authViewModel.fetchStories();
+      });
     }
 
     Widget _buildHome() {
@@ -57,7 +59,8 @@ class _HomeScreenState extends State<HomeScreen> {
                   leading: CircleAvatar(
                     backgroundImage: NetworkImage(story.photoUrl),
                   ),
-                  title: Text(story.name, style: TextStyle(fontWeight: FontWeight.bold)),
+                  title: Text(story.name,
+                      style: TextStyle(fontWeight: FontWeight.bold)),
                 ),
                 Image.network(
                   story.photoUrl,
@@ -98,7 +101,8 @@ class _HomeScreenState extends State<HomeScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Welcome $username', style: TextStyle(fontFamily: 'Billabong', fontSize: 30)),
+        title: Text('Welcome $username',
+            style: TextStyle(fontFamily: 'Billabong', fontSize: 24)),
       ),
       body: _selectedIndex == 0 ? _buildHome() : _buildAccount(),
       floatingActionButton: _selectedIndex == 0
@@ -106,15 +110,17 @@ class _HomeScreenState extends State<HomeScreen> {
         onPressed: _addStory,
         child: Icon(Icons.add),
       )
-          : null, // Hanya tampilkan FAB di halaman Home
+          : null,
       bottomNavigationBar: BottomNavigationBar(
         items: <BottomNavigationBarItem>[
           BottomNavigationBarItem(
-            icon: Icon(Icons.home, color: _selectedIndex == 0 ? Colors.green : Colors.grey),
+            icon: Icon(Icons.home,
+                color: _selectedIndex == 0 ? Colors.green : Colors.grey),
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.account_circle, color: _selectedIndex == 1 ? Colors.green : Colors.grey),
+            icon: Icon(Icons.account_circle,
+                color: _selectedIndex == 1 ? Colors.green : Colors.grey),
             label: 'Account',
           ),
         ],

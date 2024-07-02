@@ -20,10 +20,10 @@ class MyApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         title: 'Story App',
         theme: ThemeData.dark().copyWith(
-          primaryColor: Colors.teal,
+          primaryColor: Colors.black,
           scaffoldBackgroundColor: Colors.black,
           appBarTheme: const AppBarTheme(
-            backgroundColor: Colors.teal,
+            backgroundColor: Colors.black,
           ),
           textTheme: const TextTheme(
             bodyMedium: TextStyle(color: Colors.white),
